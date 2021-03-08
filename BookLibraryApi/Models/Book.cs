@@ -9,7 +9,7 @@ namespace BookLibraryApi.Models
         [Key] public int Id { get; set; }
         [Column(TypeName = "nvarchar(64)")] public string Author { get; set; }
         [Column(TypeName = "nvarchar(64)")] public string Title { get; set; }
-        public DateTime RelaseDate { get; set; }
+        public int ReleaseYear { get; set; }
         public int NumberOfPages { get; set; }
     }
 }

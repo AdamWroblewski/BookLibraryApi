@@ -51,7 +51,7 @@ namespace BookLibraryApi.Repository
             var entity = await _context.Books.FirstOrDefaultAsync(b => b.Id == id);
             entity.Author = book.Author;
             entity.Title = book.Title;
-            entity.RelaseDate = book.RelaseDate;
+            entity.ReleaseYear = book.ReleaseYear;
             entity.NumberOfPages = book.NumberOfPages;
             _context.Entry(entity).State = EntityState.Modified;
             return entity;
