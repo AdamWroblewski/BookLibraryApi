@@ -47,11 +47,21 @@ namespace BookLibraryApi
                     .AllowAnyMethod()
                     .AllowAnyHeader();
             });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BookLibraryApi v1"));
+            }
+
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope())
+            {
+                if (serviceScope != null)
+                {
+                    var context = serviceScope.ServiceProvider.GetService<BookContext>();
+                    context?.Database.Migrate();
+                }
             }
 
             app.UseHttpsRedirection();
