@@ -1,9 +1,10 @@
 ﻿using BookLibraryApi.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookLibraryApi.Contexts
 {
-    public class BookContext : DbContext
+    public class BookContext : IdentityDbContext
     {
         public BookContext(DbContextOptions<BookContext> options) : base(options)
         {

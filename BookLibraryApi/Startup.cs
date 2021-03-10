@@ -1,7 +1,9 @@
+using System.Reflection;
 using BookLibraryApi.Contexts;
 using BookLibraryApi.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,10 +30,15 @@ namespace BookLibraryApi
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "PaymentAPI", Version = "v1"});
             });
 
+            var migrationAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             services.AddDbContext<BookContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString"));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString"),
+                    sql => sql.MigrationsAssembly(migrationAssembly));
             });
+
+            services.AddDefaultIdentity<IdentityUser>()
+                .AddEntityFrameworkStores<BookContext>();
 
             services.AddTransient<IBookRepository, BookRepository>();
 
@@ -68,6 +75,7 @@ namespace BookLibraryApi
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
