@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BookLibraryApi.Contexts;
 using BookLibraryApi.Models;
@@ -23,29 +24,30 @@ namespace BookLibraryApi.Repository
             return book;
         }
 
-        public async Task<Book> GetBook(int id)
+        public async Task<Book> GetBook(int bookId, string userId)
         {
-            var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == id);
+            var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == bookId && b.User.Id == userId);
             return book;
         }
 
-        public async Task<IEnumerable<Book>> GetAllBooks()
+        public async Task<IEnumerable<Book>> GetAllBooks(string userId)
         {
-            return await _context.Books.ToListAsync();
+            return await _context.Books.Where(b => b.User.Id == userId)
+                .ToListAsync();
         }
 
-        public async Task<Book> DeleteBook(int id)
+        public async Task<Book> DeleteBook(int id, string userId)
         {
-            var bookToDelete = await _context.Books.FirstOrDefaultAsync(b => b.Id == id);
+            var bookToDelete = await _context.Books.FirstOrDefaultAsync(b => b.Id == id && b.User.Id == userId);
             if (bookToDelete == null) return null;
 
             _context.Books.Remove(bookToDelete);
             return bookToDelete;
         }
 
-        public async Task<Book> UpdateBook(int id, Book book)
+        public async Task<Book> UpdateBook(int id, Book book, string userId)
         {
-            if (id != book.Id)
+            if (id != book.Id || book.User.Id != userId)
                 return null;
 
             var entity = await _context.Books.FirstOrDefaultAsync(b => b.Id == id);

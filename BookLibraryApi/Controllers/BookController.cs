@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using BookLibraryApi.Models;
 using BookLibraryApi.Repository;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,29 +18,40 @@ namespace BookLibraryApi.Controllers
     public class BookController : ControllerBase
     {
         private readonly IBookRepository _bookRepository;
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public BookController(IBookRepository bookRepository)
+        public BookController(IBookRepository bookRepository, SignInManager<IdentityUser> signInManager)
         {
             _bookRepository = bookRepository;
+            _signInManager = signInManager;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Book>> GetBook(int id)
         {
-            return await _bookRepository.GetBook(id);
+            return await _bookRepository.GetBook(id, "");
+        }
+
+        private async Task<IdentityUser> GetCurrentUser()
+        {
+            var claims = User.Identity as ClaimsIdentity;
+            var userName = claims.FindFirst(ClaimTypes.Name)?.Value;
+            return await _signInManager.UserManager.FindByNameAsync(userName);
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetAllBooks()
         {
-            var books = await _bookRepository.GetAllBooks();
+            var identityUser = await GetCurrentUser();
+            var books = await _bookRepository.GetAllBooks(identityUser.Id);
             return books.ToList();
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteBook(int id)
         {
-            await _bookRepository.DeleteBook(id);
+            var identityUser = await GetCurrentUser();
+            await _bookRepository.DeleteBook(id, identityUser.Id);
             try
             {
                 await _bookRepository.SaveChangesAsync();
@@ -54,6 +67,7 @@ namespace BookLibraryApi.Controllers
         [HttpPost]
         public async Task<ActionResult> AddBook(Book book)
         {
+            book.User = await GetCurrentUser();
             var record = await _bookRepository.AddBook(book);
 
             try
@@ -71,7 +85,8 @@ namespace BookLibraryApi.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateBook(int id, Book book)
         {
-            var record = await _bookRepository.UpdateBook(id, book);
+            var identityUser = await GetCurrentUser();
+            var record = await _bookRepository.UpdateBook(id, book, identityUser.Id);
             if (record == null)
                 return NotFound();
 

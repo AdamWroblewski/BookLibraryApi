@@ -63,11 +63,15 @@ namespace BookLibraryApi.Controllers
             {
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("secretKey123secretKey123"));
                 var credentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+                var c = new[]
+                {
+                    new Claim(ClaimTypes.Name, model.UserName),
+                };
 
                 var options = new JwtSecurityToken(
                     issuer: "https://localhost:44369",
                     audience: "https://localhost:44369",
-                    claims: new List<Claim>(),
+                    claims: c,
                     expires: DateTime.Now.AddMinutes(5),
                     signingCredentials: credentials);
 
