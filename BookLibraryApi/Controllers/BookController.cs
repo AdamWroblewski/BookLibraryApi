@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BookLibraryApi.Models;
 using BookLibraryApi.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,7 @@ namespace BookLibraryApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BookController : ControllerBase
     {
         private readonly IBookRepository _bookRepository;
