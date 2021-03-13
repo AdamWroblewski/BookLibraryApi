@@ -4,13 +4,16 @@ namespace BookLibraryApi.Models
 {
     public class UserModel
     {
-        public string UserName { get; set; }
-        public string EmailAddress { get; set; }
+        [MinLength(6)] [Required] public string UserName { get; set; }
+        [Required] public string EmailAddress { get; set; }
 
+        [DataType(DataType.Password)]
+        [Required]
         public string Password { get; set; }
-        
-        [Compare("Password", ErrorMessage = "Passwords has to be the same")]
 
+        [Compare("Password", ErrorMessage = "Passwords has to be the same")]
+        [DataType(DataType.Password)]
+        [Required]
         public string ConfirmPassword { get; set; }
     }
 }

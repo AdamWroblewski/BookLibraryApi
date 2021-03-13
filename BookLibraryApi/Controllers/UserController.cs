@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -32,7 +31,7 @@ namespace BookLibraryApi.Controllers
         }
 
         [HttpPost]
-        [Route("Register")]
+        [Route("register")]
         public async Task<IActionResult> RegisterNewUser(UserModel model)
         {
             var user = new IdentityUser {UserName = model.UserName, Email = model.EmailAddress};
@@ -54,33 +53,31 @@ namespace BookLibraryApi.Controllers
         }
 
         [HttpPost]
-        [Route("Login")]
+        [Route("authenticate")]
         public async Task<ActionResult> Login(LoginModel model)
         {
             var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
 
-            if (result.Succeeded)
-            {
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("secretKey123secretKey123"));
-                var credentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-                var c = new[]
-                {
-                    new Claim(ClaimTypes.Name, model.UserName),
-                };
+            if (!result.Succeeded)
+                return Unauthorized();
 
-                var options = new JwtSecurityToken(
-                    issuer: "https://localhost:44369",
-                    audience: "https://localhost:44369",
-                    claims: c,
-                    expires: DateTime.Now.AddMinutes(5),
-                    signingCredentials: credentials);
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("secretKey123secretKey123"));
+            var credentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+            var claims = new[]
+            {    
+                new Claim(ClaimTypes.Name, model.UserName),
+            };
 
-                var token = new JwtSecurityTokenHandler().WriteToken(options);
+            var options = new JwtSecurityToken(
+                issuer: "https://localhost:44369",
+                audience: "https://localhost:44369",
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(60),
+                signingCredentials: credentials);
 
-                return Ok(new {Token = token});
-            }
+            var token = new JwtSecurityTokenHandler().WriteToken(options);
 
-            return Unauthorized();
+            return Ok(new {Token = token});
         }
     }
 }
