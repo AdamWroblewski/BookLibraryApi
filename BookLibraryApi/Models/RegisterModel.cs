@@ -2,7 +2,7 @@
 
 namespace BookLibraryApi.Models
 {
-    public class UserModel
+    public class RegisterModel
     {
         [MinLength(6)] [Required] public string UserName { get; set; }
         [Required] public string EmailAddress { get; set; }

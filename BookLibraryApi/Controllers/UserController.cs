@@ -32,7 +32,7 @@ namespace BookLibraryApi.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> RegisterNewUser(UserModel model)
+        public async Task<IActionResult> RegisterNewUser(RegisterModel model)
         {
             var user = new IdentityUser {UserName = model.UserName, Email = model.EmailAddress};
             IdentityResult result = null;
@@ -64,7 +64,7 @@ namespace BookLibraryApi.Controllers
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("secretKey123secretKey123"));
             var credentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
             var claims = new[]
-            {    
+            {
                 new Claim(ClaimTypes.Name, model.UserName),
             };
 
@@ -78,6 +78,22 @@ namespace BookLibraryApi.Controllers
             var token = new JwtSecurityTokenHandler().WriteToken(options);
 
             return Ok(new {Token = token});
+        }
+
+        [HttpGet]
+        [Route("validatename/{userName}")]
+        public async Task<ActionResult> IsUsernameTaken(string userName)
+        {
+            if (string.IsNullOrEmpty(userName))
+            {
+                return Ok(false);
+            }
+
+            var result = await _userManager.FindByNameAsync(userName);
+            if (result == null)
+                return Ok(false);
+
+            return Ok(true);
         }
     }
 }

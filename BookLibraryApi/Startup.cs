@@ -30,7 +30,7 @@ namespace BookLibraryApi
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "PaymentAPI", Version = "v1"});
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "BookLibraryApi", Version = "v1"});
             });
 
             var migrationAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
@@ -58,7 +58,7 @@ namespace BookLibraryApi
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = true;
-                options.Password.RequiredLength = 6;
+                options.Password.RequiredLength = 8;
             });
 
             services.AddAuthentication(opt =>

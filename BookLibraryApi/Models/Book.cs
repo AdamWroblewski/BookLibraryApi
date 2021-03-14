@@ -19,6 +19,6 @@ namespace BookLibraryApi.Models
         public string Title { get; set; }
 
         [Required] public int ReleaseYear { get; set; }
-        [Required] [MinValue(1)] public int NumberOfPages { get; set; }
+        [Required] [MinValue(0)] public int NumberOfPages { get; set; }
     }
 }
