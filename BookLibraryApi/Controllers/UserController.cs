@@ -81,7 +81,7 @@ namespace BookLibraryApi.Controllers
         }
 
         [HttpGet]
-        [Route("validatename/{userName}")]
+        [Route("is-name-taken/{userName}")]
         public async Task<ActionResult> IsUsernameTaken(string userName)
         {
             if (string.IsNullOrEmpty(userName))
@@ -90,6 +90,22 @@ namespace BookLibraryApi.Controllers
             }
 
             var result = await _userManager.FindByNameAsync(userName);
+            if (result == null)
+                return Ok(false);
+
+            return Ok(true);
+        }
+
+        [HttpGet]
+        [Route("is-email-taken/{email}")]
+        public async Task<ActionResult> IsEmailTaken(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return Ok(false);
+            }
+
+            var result = await _userManager.FindByEmailAsync(email);
             if (result == null)
                 return Ok(false);
 

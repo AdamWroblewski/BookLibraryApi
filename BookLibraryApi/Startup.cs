@@ -54,6 +54,7 @@ namespace BookLibraryApi
 
             services.Configure<IdentityOptions>(options =>
             {
+                options.User.RequireUniqueEmail = true;
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
