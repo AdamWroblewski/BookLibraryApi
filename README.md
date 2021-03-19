@@ -1,6 +1,7 @@
 # BookLibraryApi
 
 ## About The Project
+It is a server-side application that includes basic CRUD operations on books, allows user registration / authentication.
 
 ### Built With
 - [ASP.NET](https://dotnet.microsoft.com/apps/aspnet)
